@@ -11,7 +11,7 @@ const config: HardhatUserConfig = {
     hardhat: {
     },
     polygon_testnet: {
-      url: `https://eth-goerli.g.alchemy.com/v2/${process.env.POLYGON_TESTNET_API_KEY}`,
+      url: `https://polygon-mumbai.g.alchemy.com/v2/${process.env.POLYGON_TESTNET_API_KEY}`,
       accounts
     },
     goerli: {
