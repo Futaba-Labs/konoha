@@ -2,18 +2,16 @@
 pragma solidity ^0.8.9;
 
 interface IAAVELendingPoolV3 {
-    function supply(bytes32 args) external;
-
-    function encodeSupplyParams(
+    function supply(
         address asset,
         uint256 amount,
+        address onBehalfOf,
         uint16 referralCode
-    ) external view returns (bytes32);
+    ) external;
 
-    function withdraw(bytes32 args) external;
-
-    function encodeWithdrawParams(address asset, uint256 amount)
-        external
-        view
-        returns (bytes32);
+    function withdraw(
+        address asset,
+        uint256 amount,
+        address to
+    ) external returns (uint256);
 }

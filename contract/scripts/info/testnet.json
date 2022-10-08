@@ -11,7 +11,7 @@
     "tokens": {
       "uusdc": "aUSDC"
     },
-    "distributionExecutable": "0x5C52E47D8ea8B04C251BC3d8d47285C3480b337a"
+    "distributionExecutable": "0xAEb90fCD11B8d917699e40F5aFA239623376e362"
   },
   {
     "name": "Avalanche",
@@ -50,8 +50,7 @@
     "tokenSymbol": "MATIC",
     "tokens": {
       "uusdc": "aUSDC"
-    },
-    "distributionExecutable": "0xc0596348A25618E5CD1BCe2576D3D73c9227b8b1"
+    }
   },
   {
     "name": "Moonbeam",
