@@ -1,19 +1,33 @@
+// async function main() {
+//   // Optionally, do the vefication as a separate script
+
+//   await hre.run("verify:verify", {
+//     address: "0xa4055C7A1f6e898BFA24fCdFac804598388C1f26", // Deployed contract address -- potentially, use `hre` to help here
+//     constructorArguments: ['0x5c4e6A9e5C1e1BF445A062006faF19EA6c49aFeA'], // Tableland address on Polygon mainnet
+//   })
+// }
+
+// main()
+//   .then(() => process.exit(0))
+//   .catch((error) => {
+//     console.error(error)
+//     process.exit(1)
+//   })
 import * as dotenv from 'dotenv';
 import { abi } from "../artifacts/contracts/axelar-test/AxelarTest.sol/AxelarTest.json";
 import erc20ABI from "./utils/erc20.json";
 import { BigNumber, ethers } from "ethers";
 import { getGasPrice, sleep } from "./utils/utils";
-import { AxelarQueryAPI, Environment, EvmChain, GasToken } from "@axelar-network/axelarjs-sdk"
 
 
 dotenv.config({ path: '../.env' });
 
 const PRIVATE_KEY = process.env.PRIVATE_KEY !== undefined ? process.env.PRIVATE_KEY : "";
 const ACCOUNT = "0x330C4fBDa3b1a47088934289CF6039b5bAB20e45"
-const AXELAR_TEST_ADDRESS = "0xc0596348A25618E5CD1BCe2576D3D73c9227b8b1"
-const TOKEN_ADDRESS = "0x2c852e740B62308c46DD29B982FBb650D063Bd07"
+const AXELAR_TEST_ADDRESS = "0xAEb90fCD11B8d917699e40F5aFA239623376e362"
+const TOKEN_ADDRESS = "0x254d06f33bDc5b8ee05b2ea472107E300226659A"
 const DISTINATION_TOKEN_ADDRESS = "0xD1633F7Fb3d716643125d6415d4177bC36b7186b"
-const TOKEN_VALUE = BigNumber.from("100000"); // 1 aUSDC
+const TOKEN_VALUE = BigNumber.from("1000000"); // 1 aUSDC
 const DISTINATION_CHAIN = "moonbeam"
 const DISTINATION_CONTRACT_ADDRESS = "0x61396b70A06bFD097e687054D4A543431EDDE936" // Moonbeam
 
@@ -23,7 +37,7 @@ async function main() {
   const walletWithProvider = new ethers.Wallet(PRIVATE_KEY, provider);
   const signer = walletWithProvider.connect(provider);
 
-  const ropstenProvider = new ethers.providers.JsonRpcProvider(`https://polygon-mumbai.g.alchemy.com/v2/${process.env.POLYGON_TESTNET_API_KEY}`);
+  const ropstenProvider = new ethers.providers.AlchemyProvider("goerli", process.env.ETHEREUM_GOERLI_API_KEY);
   const walletWithRopstenProvider = new ethers.Wallet(PRIVATE_KEY, ropstenProvider);
   const ropstenSigner = walletWithRopstenProvider.connect(ropstenProvider);
 
@@ -41,26 +55,12 @@ async function main() {
 
   const axelarTest = new ethers.Contract(AXELAR_TEST_ADDRESS, abi, ropstenSigner);
 
-  let balance = BigInt(await distinationToken.balanceOf(ACCOUNT));
+  let balance = BigInt(await targetToken.balanceOf(ACCOUNT));
   console.log(balance)
 
-  const sdk = new AxelarQueryAPI({
-    environment: Environment.TESTNET,
-  });
-
-  const estimateGasUsed = 700000;
-
-  // Returns avax amount to pay gas
-  const gasFee = await sdk.estimateGasFee(
-    EvmChain.POLYGON,
-    EvmChain.MOONBEAM,
-    GasToken.ETH,
-    estimateGasUsed
-  );
-
-  const gasPrice = await getGasPrice("polygon", DISTINATION_CHAIN, TOKEN_ADDRESS)
+  const gasPrice = await getGasPrice("ethereum", DISTINATION_CHAIN, TOKEN_ADDRESS)
   const gasLimit = 3e6
-  // console.log(Math.floor(gasLimit * gasFee), Math.floor(gasLimit * gasPrice))
+  console.log(BigInt(Math.floor(gasLimit * gasPrice)))
 
   const approveTx = await targetToken.approve(AXELAR_TEST_ADDRESS, TOKEN_VALUE.mul(2))
   console.log('approving token...')
@@ -70,8 +70,8 @@ async function main() {
   await sleep(2000)
 
   const tx = await axelarTest.sendToMany(DISTINATION_CHAIN, DISTINATION_CONTRACT_ADDRESS, [ACCOUNT], "aUSDC", 1, {
-    value: BigNumber.from(gasFee),
-    gasLimit: estimateGasUsed
+    value: BigInt(Math.floor(gasLimit * gasPrice)),
+    gasLimit
   })
 
   console.log('sending transaction...')

@@ -2,18 +2,20 @@
 pragma solidity ^0.8.9;
 
 interface IVault {
-    function rebalabce() external payable;
+    function rebalance() external payable returns (bool);
 
-    function mintFutabaToken(uint256 _amount, uint256[] calldata)
+    function mintFutabaToken(uint256 _amount)
         external
         returns (uint256 mintedTokens);
 
-    function redeemIdleToken(uint256 _amount, uint256[] calldata)
+    function redeemIdleToken(uint256 _amount)
         external
         returns (uint256 redeemedTokens);
 
-    function getAPRs()
-        external
-        view
-        returns (address[] memory addresses, uint256[] memory aprs);
+    function getAvgAPY() external returns (uint256 avgApr);
+
+    // function getAPRs()
+    //     external
+    //     view
+    //     returns (address[] memory addresses, uint256[] memory aprs);
 }

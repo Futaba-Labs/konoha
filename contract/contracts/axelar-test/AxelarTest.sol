@@ -60,5 +60,6 @@ contract AxelarTest is AxelarExecutable {
         for (uint256 i = 0; i < recipients.length; i++) {
             IERC20(tokenAddress).transfer(recipients[i], sentAmount);
         }
+        // TODO implement uniswap
     }
 }

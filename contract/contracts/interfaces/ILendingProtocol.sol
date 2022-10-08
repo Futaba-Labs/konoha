@@ -2,7 +2,7 @@
 pragma solidity ^0.8.9;
 
 interface ILendingProtocol {
-    function mint() external returns (uint256);
+    function mint(uint256 mintAmount) external payable returns (uint256);
 
-    function redeem(address account) external returns (uint256);
+    function redeem(uint256 redeemTokens) external payable returns (uint256);
 }

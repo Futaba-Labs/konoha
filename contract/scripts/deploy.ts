@@ -13,7 +13,14 @@ import { Chain } from './utils/type';
 async function deploy(env: string, chains: Chain[], wallet: Wallet) {
   const promises = [];
   for (const chain of chains) {
-    const rpc = chain.rpc;
+    let rpc;
+    if (chain.name === "Ethereum") {
+      rpc = `https://eth-goerli.g.alchemy.com/v2/${process.env.ETHEREUM_GOERLI_API_KEY}`
+    } else {
+      rpc = chain.rpc;
+
+    }
+    console.log(rpc)
     const provider = getDefaultProvider(rpc);
     promises.push(deployAxelarTest(chain, wallet.connect(provider)));
   }
@@ -55,7 +62,8 @@ if (require.main === module) {
   deploy(env, chains, wallet);
 }
 async function deployAxelarTest(chain: Chain, wallet: any) {
-  if (chain.name === "Ethereum" || chain.name === "Polygon") {
+  if (chain.name === "Ethereum") {
+    console.log(wallet)
     console.log(`Deploying DistributionExecutable for ${chain.name}.`);
     const contract = await deployContract(wallet, DistributionExecutable, [chain.gateway, chain.gasReceiver]);
     chain.distributionExecutable = contract.address;
