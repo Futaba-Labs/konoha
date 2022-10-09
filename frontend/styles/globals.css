@@ -14,3 +14,70 @@ a {
 * {
   box-sizing: border-box;
 }
+#deposit-title {
+  font-weight: 400;
+  font-size: 40px;
+  line-height: 28px;
+  color: #b3b3b3;
+}
+
+.modal-subtitle {
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 28px;
+  /* identical to box height, or 140% */
+
+  color: #b3b3b3;
+}
+.chain-select {
+  box-shadow: 5px 5px 8px 3px #0000 inset;
+  background-color: #111111;
+  color: #111111;
+  border-radius: 20px;
+  height: 50px;
+}
+.deposit-modal {
+  background-color: #17181a;
+}
+.input-amount {
+  box-shadow: 5px 5px 8px 3px #0000 inset;
+  background-color: #1c1a25;
+  color: #1c1a25;
+  border-radius: 20px;
+  height: 50px;
+}
+.usdc {
+  color: #b3b3b3;
+  text-align: left;
+  margin-right: 200px;
+}
+.deposit-button {
+  width: 114px;
+  height: 46px;
+  border-radius: 30px;
+
+  filter: drop-shadow(4px 4px 4px rgba(0, 0, 0, 0.4));
+  color: #e6e6e6;
+  background-color: #165d04;
+}
+
+.deposit-text {
+  text-align: center;
+
+  color: #e6e6e6;
+  font-family: "Roboto";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 16px;
+}
+.close-button {
+  width: 114px;
+  height: 46px;
+  border-radius: 30px;
+
+  filter: drop-shadow(4px 4px 4px rgba(0, 0, 0, 0.4));
+  color: #e6e6e6;
+  background-color: #5b5b5b;
+}
