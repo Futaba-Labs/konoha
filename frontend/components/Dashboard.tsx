@@ -3,6 +3,7 @@ import { Text, Table, Row, Col, Button, User, Image } from "@nextui-org/react";
 import Deposit from "./Deposit";
 
 const Dashboard = () => {
+
   const columns = [
     { name: "CURRENCY", uid: "currency" },
     { name: "POOL", uid: "pool" },
