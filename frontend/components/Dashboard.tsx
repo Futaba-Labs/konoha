@@ -18,7 +18,7 @@ const Dashboard = () => {
           apy: "8.5 %",
           farming: "https://cryptologos.cc/logos/aave-aave-logo.png?v=023",
           logo: "https://cryptologos.cc/logos/usd-coin-usdc-logo.png?v=023",
-          graph: "https://png.pngtree.com/png-clipart/20220909/original/pngtree-financial-stock-market-graph-on-stock-market-investment-trading-png-image_8502628.png",
+          graph: "https://i.ibb.co/0FHsK4y/111.png",
         },
         {
           id: 2,
@@ -27,7 +27,7 @@ const Dashboard = () => {
           apy: "8.5 %",
           farming: "https://cryptologos.cc/logos/aave-aave-logo.png?v=023",
           logo: "https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png?v=023",
-          graph: "https://png.pngtree.com/png-clipart/20220909/original/pngtree-financial-stock-market-graph-on-stock-market-investment-trading-png-image_8502628.png",
+          graph: "https://i.ibb.co/g7S6g2d/222.png",
         },
         {
           id: 3,
@@ -36,7 +36,7 @@ const Dashboard = () => {
           apy: "8.5 %",
           farming: "https://cryptologos.cc/logos/aave-aave-logo.png?v=023",
           logo: "https://cryptologos.cc/logos/tether-usdt-logo.png?v=023",
-          graph: "https://png.pngtree.com/png-clipart/20220909/original/pngtree-financial-stock-market-graph-on-stock-market-investment-trading-png-image_8502628.png",
+          graph: "https://cdn.discordapp.com/attachments/1025603348914774056/1028594630389944370/333.png",
         },
       ];
     
