@@ -10,6 +10,7 @@ import {
   Link
 } from '@nextui-org/react';
 import NavBar from '../components/NavBar';
+import Dashboard from '../components/Dashboard';
 
 
 export default function Home() {
@@ -27,48 +28,14 @@ export default function Home() {
       <NavBar/>
       <Container
         as="main"
-        display="flex"
+        //display="flex"
         direction="column"
-        justify="center"
-        alignItems="center"
+        //justify="center"
+        alignItems="flex-start"
         style={{ height: '100vh' }}
       >
-        <Spacer />
-        <Image src="/logo.svg" alt="Vercel Logo" width={200} height={200} />
-        <Spacer />
-        <Text h1 className={styles.title}>
-          Welcome to&nbsp;
-          <Link
-            color
-            href="https://nextjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Next.js
-          </Link>
-          &nbsp;&&nbsp;
-          <Link
-            color
-            href="https://nextui.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            NextUI
-          </Link>
-        </Text>
-        <Spacer />
-        <Input clearable labelPlaceholder="Type something" />
-        <Spacer />
-        <Button>
-          <a
-            className={styles.button}
-            href="https://github.com/nextui-org/nextui"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Show on Github
-          </a>
-        </Button>
+        <Spacer y={1}/>
+        <Dashboard/>
       </Container>
     </div>
   );

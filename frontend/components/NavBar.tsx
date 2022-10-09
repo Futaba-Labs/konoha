@@ -1,7 +1,8 @@
 import React from "react";
-import { Navbar, Button, Text, Card, Radio } from "@nextui-org/react";
+import { Navbar, Text} from "@nextui-org/react";
 
 const NavBar = () => {
+
   return (
     <Navbar isBordered>
       <Navbar.Brand>
@@ -9,6 +10,11 @@ const NavBar = () => {
           Futaba
         </Text>
       </Navbar.Brand>
+      <Navbar.Content>
+        <Navbar.Link>
+          Connect to Wallet
+        </Navbar.Link>
+      </Navbar.Content>
     </Navbar>
   );
 };
