@@ -20,6 +20,8 @@ We have developed a cross chain yield aggregator, **Konoha**, where the Vault re
 
 ### Architecture
 
+![Architecture](docs/cross-chain-yield-aggregator.jpeg)
+
 ### Overview of each contract
 
 #### Vault contract
