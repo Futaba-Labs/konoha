@@ -2,11 +2,11 @@
 ## Summary
 Cross chain yield aggregator, which means that not only a single chain, but also the lending protocols of other chains are subject to aggregation, thus ensuring more efficient profits.
 
-### 問題意識
+### Problems
 * Aggregators in a single chain limit the number of protocols that can be utilized, which is not necessarily the optimal yield
 * UX is compromised by the need to deposit assets in each of the chains
 
-### 解決策
+### Solution
 We have developed a cross chain yield aggregator, **Konoha**, where the Vault remains a single chain, but the lending destination is up to multiple chains.
 * Aggregation of other chains' lending protocols so that a higher yielding yield aggregator can be achieved
 * The UX is high because the user only has to deposit to a specific chain protocol
