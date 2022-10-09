@@ -22,6 +22,15 @@ import {AxelarExecutable} from "@axelar-network/axelar-gmp-sdk-solidity/contract
 import {IAxelarGateway} from "@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol";
 import {IAxelarGasService} from "@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGasService.sol";
 
+interface IBridge {
+    function deposit(
+        uint8 destinationDomainID,
+        bytes32 resourceID,
+        bytes calldata depositData,
+        bytes calldata feeData
+    ) external payable;
+}
+
 contract Vault is IVault, ReentrancyGuard, Ownable, Pausable, AxelarExecutable {
     using SafeERC20 for IERC20;
     using SafeMath for uint256;
@@ -50,6 +59,10 @@ contract Vault is IVault, ReentrancyGuard, Ownable, Pausable, AxelarExecutable {
     uint256 private constant ONE_6 = 10**6;
 
     address public token;
+
+    IBridge public bridge;
+    bytes32 public resourceID;
+    Message public mes;
 
     string private bridgeTokenSymbol;
 
@@ -456,15 +469,6 @@ contract Vault is IVault, ReentrancyGuard, Ownable, Pausable, AxelarExecutable {
         Message memory message
     ) internal {
         bytes memory payload = abi.encode(message);
-        if (msg.value > 0) {
-            gasReceiver.payNativeGasForContractCall{value: msg.value}(
-                address(this),
-                destinationChain,
-                destinationAddress,
-                payload,
-                msg.sender
-            );
-        }
-        gateway.callContract(destinationChain, destinationAddress, payload);
+        bridge.deposit(1, resourceID, payload, "0x");
     }
 }

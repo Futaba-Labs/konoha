@@ -32,11 +32,6 @@ contract SygmaTest {
     }
 
     function deposit() external payable {
-        // string memory srcContract = Strings.toHexString(
-        //     uint256(uint160(address(this))),
-        //     20
-        // );
-        // bytes32 resourceID = bytes32(srcContract + bytes1(1));
         bytes memory message = abi.encode("Hello World");
         bridge.deposit(1, resourceID, message, "0x");
     }
