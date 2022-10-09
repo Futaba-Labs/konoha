@@ -1,46 +1,54 @@
-# cross-chain-yield-aggregator
-* summary
-    * プロトコルの概要
-        * Cross chain yield aggregatorである
-            * 単一のチェーンだけでなく、他のチェーンのレンディングプロトコルもaggregationの対象になっているので、より効率的に利益を確保できる
-    * 問題意識
-        * 単一のチェーン内のaggregatorだと活用できるプロトコルの数が限定されてしまい、必ずしも最適な利回りではない
-        * 各チェーンにそれぞれ資産を預ける必要が発生するのでUXが損なわれている
-    * 解決策
-        * Vaultは単一のチェーンのままで、レンディング先が複数のチェーンにまで対応したCross chain yield aggregator
-            * 他のチェーンのレンディングプロトコルをaggregationするのでより利回りの高いyield aggregatorを実現することができる
-            * ユーザも特定のチェーンのプロトコルにdepositするだけなのでUXが高い
-* overview
-    * アーキテクチャ
-        * 画像を挿入
-    * 各コントラクトの概要
-        * Vault contract
-            * 資産のdeposit / redeem
-            * APYの計算
-            * 資産とデータの移動
-                * Axelarの使用
-            * 特定の1つのチェーンにのみ存在する
-        * Strategy contract
-            * 各レンディングプロトコルへのdeposit / redeemの指示
-            * 他のチェーンのStrategy contractへのbridge / messaging
-        * Wrapper contract
-            * 各レンディングプロトコルでのdeposit / redeemを行うコントラクト
-            * 対応プロトコル
-                * AAVE_V3(Polygon)
-                * Compound(Ethereum)
-                * Moonwell(Moonbeam)
-    * 処理の流れ
-        * 以前書いたユーザーフローを参考に
-* requirements
-    * 環境構築方法
-        * インストール方法
-        * テストのコマンド
-        * デプロイのコマンド
-* deployed contract
-    * テーブル形式で
-* feature to be implemented
-* FAQ
-    * どのように他のチェーンのデータを取得しているのか
-    * どのようなメッセージングプロトコルを使用しているのか
-* Other resource
-    * Futaba Nodeに関する資料
+# Konoha - Cross-Chain-Yield-Aggregator
+## Summary
+Cross chain yield aggregator, which means that not only a single chain, but also the lending protocols of other chains are subject to aggregation, thus ensuring more efficient profits.
+
+### 問題意識
+* Aggregators in a single chain limit the number of protocols that can be utilized, which is not necessarily the optimal yield
+* UX is compromised by the need to deposit assets in each of the chains
+
+### 解決策
+We have developed a cross chain yield aggregator, **Konoha**, where the Vault remains a single chain, but the lending destination is up to multiple chains.
+* Aggregation of other chains' lending protocols so that a higher yielding yield aggregator can be achieved
+* The UX is high because the user only has to deposit to a specific chain protocol
+
+## Overview
+### Architecture
+ * 画像を挿入
+### Overview of each contract
+#### Vault contract
+* Deposit / redeem of assets
+* APY calculations
+* Move assets and data
+   * Use of Axelar and Sygma
+* Only exists in one specific chain
+#### Strategy contract
+* Deposit / redeem instructions to each lending protocol
+* bridge / messaging to strategy contract of other chains
+#### Wrapper contract
+* Contracts for deposit / redeem in each lending protocol
+* Supported protocols
+   * AAVE_V3(Polygon)
+   * Compound(Ethereum)
+   * Moonwell(Moonbeam)
+### User Flow
+1. User deposits assets(USDC)
+2. Minted **kUSDC** in exchange
+3. Send deposited USDC to vault(Chains other than Moonbeam will require a bridge)
+4. Execute rebalancing via Chainlink node
+5. Refer to data in APY for each protocol from DB contract
+6. Calculate APY including the cost of the bridge
+7. Send assets to the chain of protocols with the highest APY    
+8. Strategy makes a deposit to the target protocol    
+9. Repeat steps 4 through 8
+10. If assets remain in vault, users can withdraw them
+11. Burn **kUSDC** in exchange for withdrawals
+## Requirements
+How to build environment
+How to install
+Commands for testing
+Deployment commands
+## deployed contract
+* table
+## feature to be implemented
+* More chains and protocols supported
+* Implementation of more efficient APY calculations
