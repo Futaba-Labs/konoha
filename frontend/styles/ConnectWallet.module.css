@@ -1,0 +1,21 @@
+.metamask {
+  width: 10px;
+  height: 10px;
+}
+.top_32px {
+  margin: top 32px;
+}
+
+.menu_text {
+  width: 160px;
+  font-family: "Helvetica Neue";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 20px;
+  /* or 460% */
+
+  display: flex;
+  align-items: center;
+  text-align: center;
+  /* White */
+}
