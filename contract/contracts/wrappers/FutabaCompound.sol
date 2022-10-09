@@ -39,7 +39,7 @@ contract FutabaCompound is AxelarExecutable {
         for (uint256 i = 0; i < recipients.length; i++) {
             IERC20(tokenAddress).transfer(recipients[i], sentAmount);
         }
-        // TODO implement uniswap
+        mint(amount);
     }
 
     function _sendTokenWithMessageToStrategy(
@@ -73,12 +73,12 @@ contract FutabaCompound is AxelarExecutable {
         );
     }
 
-    function mint(uint256 mintAmount) external returns (uint256) {
+    function mint(uint256 mintAmount) internal returns (uint256) {
         uint256 result = cToken.mint(mintAmount);
         return result;
     }
 
-    function redeem(uint256 redeemTokens) external returns (uint256) {
+    function redeem(uint256 redeemTokens) internal returns (uint256) {
         uint256 result = cToken.redeem(redeemTokens);
         return result;
     }

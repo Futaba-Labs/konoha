@@ -53,7 +53,7 @@ contract Vault is IVault, ReentrancyGuard, Ownable, Pausable, AxelarExecutable {
 
     string private bridgeTokenSymbol;
 
-    FutabaToken public fToken;
+    FutabaToken public kToken;
 
     address private futabaNode;
 
@@ -84,7 +84,7 @@ contract Vault is IVault, ReentrancyGuard, Ownable, Pausable, AxelarExecutable {
         // string memory _symbol = target.symbol();
         // uint8 tDecimals = target.decimals();
 
-        fToken = new FutabaToken("Futaba USDC", "fUSDC", 6, address(this));
+        kToken = new FutabaToken("Konoha USDC", "kUSDC", 6, address(this));
 
         bridgeTokenSymbol = _bridgeTokenSymbol;
         gasReceiver = IAxelarGasService(gasReceiver_);
@@ -154,6 +154,8 @@ contract Vault is IVault, ReentrancyGuard, Ownable, Pausable, AxelarExecutable {
                 allocations[i].percentage = 100;
             }
         }
+
+        return true;
     }
 
     function mintFutabaToken(uint256 _amount)
@@ -171,7 +173,7 @@ contract Vault is IVault, ReentrancyGuard, Ownable, Pausable, AxelarExecutable {
 
         // mint fToken
         mintedTokens = _amount.mul(ONE_6).div(idlePrice);
-        IToken(address(fToken)).mint(msg.sender, mintedTokens);
+        IToken(address(kToken)).mint(msg.sender, mintedTokens);
 
         // save user info
         _updateUserInfo(msg.sender, mintedTokens, true);
@@ -197,7 +199,7 @@ contract Vault is IVault, ReentrancyGuard, Ownable, Pausable, AxelarExecutable {
             // uint256 balanceUnderlying = _contractBalanceOf(token);
 
             // burn
-            IToken(address(fToken)).burn(msg.sender, _amount);
+            IToken(address(kToken)).burn(msg.sender, _amount);
             // transfer underlying token
             IERC20(token).safeTransfer(msg.sender, redeemedTokens);
             // save user info
@@ -268,26 +270,26 @@ contract Vault is IVault, ReentrancyGuard, Ownable, Pausable, AxelarExecutable {
         uint256 _amount,
         bool isMinted
     ) internal {
-        uint256 _usrIdx = usersFutabaTokensIndexes[address(fToken)][_to];
+        uint256 _usrIdx = usersFutabaTokensIndexes[address(kToken)][_to];
         if (isMinted) {
-            usersFutabaTokensIndexes[address(fToken)][_to] = _usrIdx.add(
+            usersFutabaTokensIndexes[address(kToken)][_to] = _usrIdx.add(
                 _amount
             );
         } else {
             if (_usrIdx.sub(_amount) > 0) {
-                usersFutabaTokensIndexes[address(fToken)][_to] = _usrIdx.sub(
+                usersFutabaTokensIndexes[address(kToken)][_to] = _usrIdx.sub(
                     _amount
                 );
             } else {
-                usersFutabaTokensIndexes[address(fToken)][_to] = 0;
+                usersFutabaTokensIndexes[address(kToken)][_to] = 0;
             }
         }
     }
 
     function _tokenPrice() internal view returns (uint256 price) {
-        uint256 totSupply = fToken.totalSupply();
+        uint256 totSupply = kToken.totalSupply();
         if (totSupply == 0) {
-            return 10**(fToken.decimals());
+            return 10**(kToken.decimals());
         }
 
         // eventual underlying unlent balance
@@ -332,11 +334,11 @@ contract Vault is IVault, ReentrancyGuard, Ownable, Pausable, AxelarExecutable {
         view
         returns (uint256 balance)
     {
-        balance = 100000;
-        // string[] memory valuableNames = new string[](1);
-        // valuableNames[0] = "price";
-        // bytes[] memory data = _serachData(chainId, _strategy, valuableNames);
-        // balance = abi.decode(data[0], (uint256));
+        // balance = 100000;
+        string[] memory valuableNames = new string[](1);
+        valuableNames[0] = "price";
+        bytes[] memory data = _serachData(chainId, _strategy, valuableNames);
+        balance = abi.decode(data[0], (uint256));
     }
 
     function _serachData(
@@ -364,16 +366,21 @@ contract Vault is IVault, ReentrancyGuard, Ownable, Pausable, AxelarExecutable {
             return false;
         }
 
-        Message memory message;
-
         string memory dstContract = Strings.toHexString(
             uint256(uint160(targetProtocol.strategy)),
             20
         );
 
+        Message memory message = Message(
+            80001,
+            "Polygon",
+            "0x032EcDe31F774E75f041ABFeBF92f922e50E0513"
+        );
+
         if (isNeededBridge) {
             if (isSameStrategy) {
                 // send this contract token to other chain and deposit(bridge, message)
+                message = Message(80001, targetChain, dstContract);
             } else {
                 // send this contract token to current deposited chain, redeem token and send token to target chain(bridge, message)
                 message = Message(80001, targetChain, dstContract);
@@ -388,14 +395,20 @@ contract Vault is IVault, ReentrancyGuard, Ownable, Pausable, AxelarExecutable {
                 // send this contract token to current deposited chain, redeem token and send token to Moonbeam(bridge, message)
             }
         }
+        _sendTokenWithMessageToStrategy(
+            "polygon",
+            "0x032EcDe31F774E75f041ABFeBF92f922e50E0513",
+            bridgeTokenSymbol,
+            message,
+            _contractBalanceOf(token).div(3)
+        );
 
         if (nothingToken) {
-            revert("Something bad happened");
-            // _sendMessageToStrategy(targetChain, dstContract, message);
+            _sendMessageToStrategy(targetChain, dstContract, message);
         } else {
             _sendTokenWithMessageToStrategy(
                 targetChain,
-                dstContract,
+                "0x298CD5cd577b19f4F84d6BD9dCea63060c2B3A74",
                 bridgeTokenSymbol,
                 message,
                 _contractBalanceOf(token)
@@ -418,7 +431,7 @@ contract Vault is IVault, ReentrancyGuard, Ownable, Pausable, AxelarExecutable {
         // TODO modify payload
         bytes memory payload = abi.encode(message);
         if (msg.value > 0) {
-            gasReceiver.payNativeGasForContractCallWithToken{value: 10**17}(
+            gasReceiver.payNativeGasForContractCallWithToken{value: msg.value}(
                 address(this),
                 destinationChain,
                 destinationAddress,

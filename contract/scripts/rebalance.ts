@@ -3,10 +3,12 @@ import { BigNumber, ethers } from 'ethers';
 import erc20ABI from "./utils/erc20.json";
 import { abi } from "../artifacts/contracts/Vault.sol/Vault.json";
 import { abi as futabaABI } from "../artifacts/contracts/FutabaToken.sol/FutabaToken.json"
+import { AxelarQueryAPI, Environment, EvmChain, GasToken } from "@axelar-network/axelarjs-sdk"
+
 
 dotenv.config({ path: '../.env' });
 
-const VAULT_ADDRESS = "0x336dB3a68e30dffea72D002c99c41ac20ae4E5bB"
+const VAULT_ADDRESS = "0x53d86d64b08a1edCE57cabF0AfD7adc533077c8a"
 const PRIVATE_KEY = process.env.PRIVATE_KEY !== undefined ? process.env.PRIVATE_KEY : "";
 // const ACCOUNT = "0x330C4fBDa3b1a47088934289CF6039b5bAB20e45"
 const TOKEN_ADDRESS = "0xD1633F7Fb3d716643125d6415d4177bC36b7186b"
@@ -44,7 +46,7 @@ async function main() {
       chainId: 137,
       src: "0x794a61358D6845594F94dc1DB02A252b5b4814aD",
       valuableName: "liquidityRate",
-      strategy: "0x1ea1207a5DAE9C3b31A45796894F4066a5835dAe"
+      strategy: "0x298CD5cd577b19f4F84d6BD9dCea63060c2B3A74"
     }
   }, {
     name: "Moonwell",
@@ -70,7 +72,18 @@ async function main() {
 
   // console.log('complete!')
 
-  const tx = await vaultContract.rebalance({ gasLimit: 2000000 })
+  const sdk = new AxelarQueryAPI({
+    environment: Environment.TESTNET,
+  });
+
+  const gasFee = await sdk.estimateGasFee(
+    EvmChain.MOONBEAM,
+    EvmChain.POLYGON,
+    GasToken.GLMR,
+    4000000
+  );
+
+  const tx = await vaultContract.rebalance({ value: BigNumber.from("500000000000000000"), gasLimit: 4000000 })
   await tx.wait()
   console.log(tx)
 }
