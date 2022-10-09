@@ -1,19 +1,22 @@
 import React from "react";
-import { Navbar, Text} from "@nextui-org/react";
+import { Navbar, Text, Button, Link} from "@nextui-org/react";
 
 const NavBar = () => {
 
   return (
     <Navbar isBordered>
       <Navbar.Brand>
-        <Text b color="inherit" hideIn="xs">
+        <Link href="/">
+        <Text b color="black" hideIn="xs">
           Futaba
         </Text>
+        </Link>
       </Navbar.Brand>
       <Navbar.Content>
-        <Navbar.Link>
-          Connect to Wallet
+        <Navbar.Link href="/about">
+          About
         </Navbar.Link>
+        <Button>Connect to Wallet</Button>
       </Navbar.Content>
     </Navbar>
   );
