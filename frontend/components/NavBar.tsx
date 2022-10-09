@@ -1,8 +1,8 @@
 import React from "react";
+import ConnectWallet from "./ConnextWallet";
 import { Navbar, Text, Button, Link} from "@nextui-org/react";
 
 const NavBar = () => {
-
   return (
     <Navbar isBordered>
       <Navbar.Brand>
@@ -13,10 +13,11 @@ const NavBar = () => {
         </Link>
       </Navbar.Brand>
       <Navbar.Content>
+
+        <ConnectWallet />
         <Navbar.Link href="/about">
           About
         </Navbar.Link>
-        <Button>Connect to Wallet</Button>
       </Navbar.Content>
     </Navbar>
   );

@@ -1,11 +1,14 @@
 import '../styles/globals.css';
+import {TransactionProvider} from '../context/KonohaTransaction'
+
 import { NextUIProvider,Container, Spacer } from '@nextui-org/react';
 import NavBar from '../components/NavBar';
 
 function MyApp({ Component, pageProps }) {
   return (
+    <TransactionProvider>
     <NextUIProvider>
-      <NavBar/>
+<NavBar/>
       <Container
         as="main"
         //display="flex"
@@ -18,6 +21,7 @@ function MyApp({ Component, pageProps }) {
       <Component {...pageProps} />
       </Container>
     </NextUIProvider>
+    </TransactionProvider>
   );
 }
 
