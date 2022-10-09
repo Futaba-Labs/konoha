@@ -1,43 +1,42 @@
 import React from "react";
-import { Text, Table, Row, Col, Tooltip, User  } from "@nextui-org/react";
+import { Text, Table, Row, Col, Button, User, Image  } from "@nextui-org/react";
 
 const Dashboard = () => {
     const columns = [
         { name: "CURRENCY", uid: "currency" },
-        { name: "ROLE", uid: "role" },
-        { name: "STATUS", uid: "status" },
-        { name: "ACTIONS", uid: "actions" },
+        { name: "POOL", uid: "pool" },
+        { name: "APY", uid: "apy" },
+        {name: "FARMING", uid: "farming"},
+        {name: "APY TRANSITION", uid: "graph"},
+        {name: "BUTTON", uid: "button"}
       ];
       const users = [
         {
           id: 1,
           currency: "USDC",
-          role: "CEO",
-          team: "Management",
-          status: "active",
-          age: "29",
-          avatar: "https://cryptologos.cc/logos/usd-coin-usdc-logo.png?v=023",
-          email: "tony.reichert@example.com",
+          pool: "1M",
+          apy: "8.5 %",
+          farming: "https://cryptologos.cc/logos/aave-aave-logo.png?v=023",
+          logo: "https://cryptologos.cc/logos/usd-coin-usdc-logo.png?v=023",
+          graph: "https://png.pngtree.com/png-clipart/20220909/original/pngtree-financial-stock-market-graph-on-stock-market-investment-trading-png-image_8502628.png",
         },
         {
           id: 2,
           currency: "DAI",
-          role: "Technical Lead",
-          team: "Development",
-          status: "paused",
-          age: "25",
-          avatar: "https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png?v=023",
-          email: "zoey.lang@example.com",
+          pool: "1M",
+          apy: "8.5 %",
+          farming: "https://cryptologos.cc/logos/aave-aave-logo.png?v=023",
+          logo: "https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png?v=023",
+          graph: "https://png.pngtree.com/png-clipart/20220909/original/pngtree-financial-stock-market-graph-on-stock-market-investment-trading-png-image_8502628.png",
         },
         {
           id: 3,
           currency: "USDT",
-          role: "Senior Developer",
-          team: "Development",
-          status: "active",
-          age: "22",
-          avatar: "https://cryptologos.cc/logos/tether-usdt-logo.png?v=023",
-          email: "jane.fisher@example.com",
+          pool: "1M",
+          apy: "8.5 %",
+          farming: "https://cryptologos.cc/logos/aave-aave-logo.png?v=023",
+          logo: "https://cryptologos.cc/logos/tether-usdt-logo.png?v=023",
+          graph: "https://png.pngtree.com/png-clipart/20220909/original/pngtree-financial-stock-market-graph-on-stock-market-investment-trading-png-image_8502628.png",
         },
       ];
     
@@ -46,11 +45,11 @@ const Dashboard = () => {
         switch (columnKey) {
           case "currency":
             return (
-              <User squared src={user.avatar} name={cellValue} css={{ p: 0 }}>
+              <User squared src={user.logo} name={cellValue} css={{ p: 0 }}>
                 
               </User>
             );
-          case "role":
+          case "pool":
             return (
               <Col>
                 <Row>
@@ -58,38 +57,44 @@ const Dashboard = () => {
                     {cellValue}
                   </Text>
                 </Row>
-                <Row>
-                  <Text b size={13} css={{ tt: "capitalize", color: "$accents7" }}>
-                    {user.team}
-                  </Text>
-                </Row>
               </Col>
             );
-    //      case "status":
-    //        return <StyledBadge type={user.status}>{cellValue}</StyledBadge>;
     
-          case "actions":
+          case "apy":
+            return(
+              <Col>
+                <Row>
+                    <Text b size={14}>
+                        {cellValue}
+                    </Text>
+                </Row>
+              </Col>
+            )      
+          
+          case "farming":
             return (
-              <Row justify="center" align="center">
-                <Col css={{ d: "flex" }}>
-                  <Tooltip content="Details">
-                  </Tooltip>
+                <User squared name="" src={cellValue} css={{ p: 0 }}>
+                
+                </User>                
+            )  
+          case "graph":
+            return (
+                <Col>
+                    <Row >
+                        <Image src={cellValue} autoResize={true} width={150} />
+                    </Row>
                 </Col>
-                <Col css={{ d: "flex" }}>
-                  <Tooltip content="Edit user">
-                  </Tooltip>
+            )
+          case "button":
+            return (
+                <Col>
+                    <Row>
+                        <Button size="sm" onPress={() => {console.log("You pressed " + user.currency)}}>Deposit</Button>
+                    </Row>
                 </Col>
-                <Col css={{ d: "flex" }}>
-                  <Tooltip
-                    content="Delete user"
-                    color="error"
-                    onClick={() => console.log("Delete user", user.id)}
-                  >
-                  </Tooltip>
-                </Col>
-              </Row>
-            );
-          default:
+            )
+
+            default:
             return cellValue;
         }
       };
@@ -98,18 +103,19 @@ const Dashboard = () => {
         <React.Fragment>
             <Text h2>Available Assets</Text>
             <Table
+        aria-label="Dashboard"    
         css={{
             height: "auto",
             minWidth: "100%",
         }}
-        selectionMode="none"
+        selectionMode="single"
         >
         <Table.Header columns={columns}>
             {(column) => (
             <Table.Column
                 key={column.uid}
-                hideHeader={column.uid === "actions"}
-                align={column.uid === "actions" ? "center" : "start"}
+                hideHeader={column.uid === "button"}
+                align={column.uid === "graph" ? "center" : "start"}
             >
                 {column.name}
             </Table.Column>
