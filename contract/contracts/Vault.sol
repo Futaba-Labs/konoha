@@ -111,63 +111,49 @@ contract Vault is IVault, ReentrancyGuard, Ownable, Pausable, AxelarExecutable {
     }
 
     function rebalance() external payable returns (bool) {
-        // // get APY
-        // uint256 aaveAPY = _getAPYDataFromOtherChain(protocolWrapper["AAVE"]);
-        // uint256 compAPY = _getAPYDataFromOtherChain(
-        //     protocolWrapper["Compound"]
-        // );
-        // uint256 moonwellAPY = _getAPYDataFromOtherChain(
-        //     protocolWrapper["Moonwell"]
-        // );
+        // get APY
+        uint256 aaveAPY = _getAPYDataFromOtherChain(protocolWrapper["AAVE"]);
+        uint256 compAPY = _getAPYDataFromOtherChain(
+            protocolWrapper["Compound"]
+        );
+        uint256 moonwellAPY = _getAPYDataFromOtherChain(
+            protocolWrapper["Moonwell"]
+        );
 
         // (calc bridge fee)
         // compare APY
-        // string memory targetChain;
-        // Wrapper memory targetProtocol;
-        // bool isNeededBridge = true;
+        string memory targetChain;
+        Wrapper memory targetProtocol;
+        bool isNeededBridge = true;
 
-        Message memory message = Message(
-            80001,
-            "Polygon",
-            "0x032EcDe31F774E75f041ABFeBF92f922e50E0513"
-        );
+        if (aaveAPY > compAPY) {
+            if (aaveAPY > moonwellAPY) {
+                targetChain = "Polygon";
+                targetProtocol = protocolWrapper["AAVE"];
+            } else {
+                targetChain = "Moonbeam";
+                targetProtocol = protocolWrapper["Moonbeam"];
+                isNeededBridge = false;
+            }
+        } else {
+            if (compAPY > moonwellAPY) {
+                targetChain = "Ethereum";
+                targetProtocol = protocolWrapper["Compound"];
+            } else {
+                targetChain = "Moonbeam";
+                targetProtocol = protocolWrapper["Moonbeam"];
+                isNeededBridge = false;
+            }
+        }
 
-        _sendTokenWithMessageToStrategy(
-            "polygon",
-            "0x032EcDe31F774E75f041ABFeBF92f922e50E0513",
-            bridgeTokenSymbol,
-            message,
-            _contractBalanceOf(token).div(3)
-        );
-
-        // if (aaveAPY > compAPY) {
-        //     if (aaveAPY > moonwellAPY) {
-        //         targetChain = "Polygon";
-        //         targetProtocol = protocolWrapper["AAVE"];
-        //     } else {
-        //         targetChain = "Moonbeam";
-        //         targetProtocol = protocolWrapper["Moonbeam"];
-        //         isNeededBridge = false;
-        //     }
-        // } else {
-        //     if (compAPY > moonwellAPY) {
-        //         targetChain = "Ethereum";
-        //         targetProtocol = protocolWrapper["Compound"];
-        //     } else {
-        //         targetChain = "Moonbeam";
-        //         targetProtocol = protocolWrapper["Moonbeam"];
-        //         isNeededBridge = false;
-        //     }
-        // }
-
-        // _sendToStrategy(targetChain, targetProtocol, isNeededBridge);
+        _sendToStrategy(targetChain, targetProtocol, isNeededBridge);
 
         // save allocation
-        // for (uint256 i = 0; i < allocations.length; i++) {
-        //     if (allocations[i].strategy == targetProtocol.strategy) {
-        //         allocations[i].percentage = 100;
-        //     }
-        // }
+        for (uint256 i = 0; i < allocations.length; i++) {
+            if (allocations[i].strategy == targetProtocol.strategy) {
+                allocations[i].percentage = 100;
+            }
+        }
 
         return true;
     }
@@ -372,18 +358,18 @@ contract Vault is IVault, ReentrancyGuard, Ownable, Pausable, AxelarExecutable {
         Wrapper memory targetProtocol,
         bool isNeededBridge
     ) internal returns (bool) {
-        // bool nothingToken = _contractBalanceOf(token) == 0;
-        // bool isSameStrategy = targetProtocol.strategy ==
-        //     allocations[0].strategy;
+        bool nothingToken = _contractBalanceOf(token) == 0;
+        bool isSameStrategy = targetProtocol.strategy ==
+            allocations[0].strategy;
 
-        // if (nothingToken && isSameStrategy) {
-        //     return false;
-        // }
+        if (nothingToken && isSameStrategy) {
+            return false;
+        }
 
-        // string memory dstContract = Strings.toHexString(
-        //     uint256(uint160(targetProtocol.strategy)),
-        //     20
-        // );
+        string memory dstContract = Strings.toHexString(
+            uint256(uint160(targetProtocol.strategy)),
+            20
+        );
 
         Message memory message = Message(
             80001,
@@ -391,24 +377,24 @@ contract Vault is IVault, ReentrancyGuard, Ownable, Pausable, AxelarExecutable {
             "0x032EcDe31F774E75f041ABFeBF92f922e50E0513"
         );
 
-        // if (isNeededBridge) {
-        //     if (isSameStrategy) {
-        //         // send this contract token to other chain and deposit(bridge, message)
-        //         message = Message(80001, targetChain, dstContract);
-        //     } else {
-        //         // send this contract token to current deposited chain, redeem token and send token to target chain(bridge, message)
-        //         message = Message(80001, targetChain, dstContract);
-        //     }
-        // } else {
-        //     if (isSameStrategy) {
-        //         ILendingProtocol(targetProtocol.strategy).mint(
-        //             _contractBalanceOf(token)
-        //         );
-        //         return true;
-        //     } else {
-        //         // send this contract token to current deposited chain, redeem token and send token to Moonbeam(bridge, message)
-        //     }
-        // }
+        if (isNeededBridge) {
+            if (isSameStrategy) {
+                // send this contract token to other chain and deposit(bridge, message)
+                message = Message(80001, targetChain, dstContract);
+            } else {
+                // send this contract token to current deposited chain, redeem token and send token to target chain(bridge, message)
+                message = Message(80001, targetChain, dstContract);
+            }
+        } else {
+            if (isSameStrategy) {
+                ILendingProtocol(targetProtocol.strategy).mint(
+                    _contractBalanceOf(token)
+                );
+                return true;
+            } else {
+                // send this contract token to current deposited chain, redeem token and send token to Moonbeam(bridge, message)
+            }
+        }
         _sendTokenWithMessageToStrategy(
             "polygon",
             "0x032EcDe31F774E75f041ABFeBF92f922e50E0513",
@@ -417,17 +403,17 @@ contract Vault is IVault, ReentrancyGuard, Ownable, Pausable, AxelarExecutable {
             _contractBalanceOf(token).div(3)
         );
 
-        // if (nothingToken) {
-        // _sendMessageToStrategy(targetChain, dstContract, message);
-        // } else {
-        // _sendTokenWithMessageToStrategy(
-        //     targetChain,
-        //     "0x298CD5cd577b19f4F84d6BD9dCea63060c2B3A74",
-        //     bridgeTokenSymbol,
-        //     message,
-        //     _contractBalanceOf(token)
-        // );
-        // }
+        if (nothingToken) {
+            _sendMessageToStrategy(targetChain, dstContract, message);
+        } else {
+            _sendTokenWithMessageToStrategy(
+                targetChain,
+                "0x298CD5cd577b19f4F84d6BD9dCea63060c2B3A74",
+                bridgeTokenSymbol,
+                message,
+                _contractBalanceOf(token)
+            );
+        }
 
         return true;
     }
