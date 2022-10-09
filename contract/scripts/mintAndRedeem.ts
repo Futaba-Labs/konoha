@@ -6,11 +6,11 @@ import { abi as futabaABI } from "../artifacts/contracts/FutabaToken.sol/FutabaT
 
 dotenv.config({ path: '../.env' });
 
-const VAULT_ADDRESS = "0x336dB3a68e30dffea72D002c99c41ac20ae4E5bB"
+const VAULT_ADDRESS = "0x255F9E8898D1A2B324aa6f1D7508fB4FcB6eC85e"
 const PRIVATE_KEY = process.env.PRIVATE_KEY !== undefined ? process.env.PRIVATE_KEY : "";
 const ACCOUNT = "0x330C4fBDa3b1a47088934289CF6039b5bAB20e45"
 const TOKEN_ADDRESS = "0xD1633F7Fb3d716643125d6415d4177bC36b7186b"
-const TOKEN_AMOUNT = BigNumber.from("1000000"); // 1 aUSDC
+const TOKEN_AMOUNT = BigNumber.from("100000"); // 0.1 aUSDC
 const FUTABA_NODE = "0xAEb90fCD11B8d917699e40F5aFA239623376e362"
 // const DISTINATION_CHAIN = "Polygon"
 // const DISTINATION_CONTRACT_ADDRESS = "0xc0596348A25618E5CD1BCe2576D3D73c9227b8b1" // Polygon
@@ -31,7 +31,7 @@ async function main() {
   )
 
   const vaultContract = new ethers.Contract(VAULT_ADDRESS, abi, signer)
-  const te = await vaultContract.fToken()
+  const te = await vaultContract.kToken()
   // const te = await vaultContract.tokenPrice(TOKEN_AMOUNT)
   console.log(te)
 
@@ -48,13 +48,13 @@ async function main() {
   // console.log(t)
 
 
-  // const setFutaba = await vaultContract.setFutabaDB(FUTABA_NODE, { gasLimit: 2000000 })
+  const setFutaba = await vaultContract.setFutabaDB(FUTABA_NODE, { gasLimit: 2000000 })
 
-  // console.log('sending transaction...')
+  console.log('sending transaction...')
 
-  // await setFutaba.wait()
+  await setFutaba.wait()
 
-  // console.log('complete!')
+  console.log('complete!')
 
 
   let approveTx = await targetToken.approve(VAULT_ADDRESS, TOKEN_AMOUNT.mul(2))

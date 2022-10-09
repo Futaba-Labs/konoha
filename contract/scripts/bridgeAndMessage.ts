@@ -54,7 +54,7 @@ async function main() {
   const gasFee = await sdk.estimateGasFee(
     EvmChain.POLYGON,
     EvmChain.MOONBEAM,
-    GasToken.ETH,
+    GasToken.MATIC,
     estimateGasUsed
   );
 
@@ -69,7 +69,7 @@ async function main() {
 
   await sleep(2000)
 
-  const tx = await axelarTest.sendToMany(DISTINATION_CHAIN, DISTINATION_CONTRACT_ADDRESS, [ACCOUNT], "aUSDC", 1, {
+  const tx = await axelarTest.sendToMany(DISTINATION_CHAIN, DISTINATION_CONTRACT_ADDRESS, [ACCOUNT], "aUSDC", TOKEN_VALUE, {
     value: BigNumber.from(gasFee),
     gasLimit: estimateGasUsed
   })
